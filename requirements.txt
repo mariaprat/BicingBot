@@ -1,0 +1,6 @@
+python-telegram-bot
+staticmap
+pandas
+networks
+geopy
+haversine
