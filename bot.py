@@ -23,12 +23,17 @@ def authors(bot, update):
 
 
 def nodes(bot, update):
-	global G
-	bot.send_message(chat_id = update.message.chat_id, text = G.number_of_nodes())
+    global G
+    bot.send_message(chat_id = update.message.chat_id, text = G.number_of_nodes())
+
+def components(bot, update):
+    global G
+    bot.send_message(chat_id = update.message.chat_id, text = nx.number_connected_components(G))
 
 def edges(bot, update):
-	global G
-	bot.send_message(chat_id = update.message.chat_id, text = G.number_of_edges())
+    global G
+    bot.send_message(chat_id = update.message.chat_id, text = G.number_of_edges())
+
 
 def plotgraph(bot, update):
     global G
@@ -76,6 +81,7 @@ dispatcher.add_handler(CommandHandler('authors', authors))
 dispatcher.add_handler(CommandHandler('nodes', nodes))
 dispatcher.add_handler(CommandHandler('edges', edges))
 dispatcher.add_handler(CommandHandler('plotgraph', plotgraph))
+dispatcher.add_handler(CommandHandler('components', components))
 dispatcher.add_handler(CommandHandler('graph', graph, pass_args = True))
 
 
