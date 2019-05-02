@@ -6,6 +6,8 @@ from telegram.ext import CommandHandler
 from data import precalculation
 from data import geometric_graph
 from data import ploting
+from data import ruta
+from data import addressesTOcoordinates
 from staticmap import StaticMap, Line
 
 
@@ -65,6 +67,27 @@ def graph(bot, update, args):
         print(e)
         bot.send_message(chat_id=update.message.chat_id, text='💣')
 
+def route(bot, update, args):
+    try:
+        x = " ".join(args)
+        
+        global edge_list
+        global G
+
+        fitxer = 'map1.png'
+
+        m = ruta(x, G, diccionari)
+        image = m.render(zoom = 12)
+        image.save(fitxer)
+
+        bot.send_photo(chat_id=update.message.chat_id, photo=open(fitxer, 'rb'))
+        bot.send_message(chat_id=update.message.chat_id, text= "ok")
+        #os.remove(fitxer) whyyyyy
+
+
+    except Exception as e:
+        print(e)
+        bot.send_message(chat_id=update.message.chat_id, text='💣')
 
 
 TOKEN = open('token.txt').read().strip()
@@ -83,6 +106,7 @@ dispatcher.add_handler(CommandHandler('edges', edges))
 dispatcher.add_handler(CommandHandler('plotgraph', plotgraph))
 dispatcher.add_handler(CommandHandler('components', components))
 dispatcher.add_handler(CommandHandler('graph', graph, pass_args = True))
+dispatcher.add_handler(CommandHandler('route', route, pass_args = True))
 
 
 updater.start_polling()
