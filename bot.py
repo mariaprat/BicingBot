@@ -31,28 +31,16 @@ def edges(bot, update):
 	bot.send_message(chat_id = update.message.chat_id, text = G.number_of_edges())
 
 def plotgraph(bot, update):
-    print("here")
     global G
     global diccionari
     global edge_list
 
-    print("there")
+    fitxer = 'map.png'
+
     m = ploting(G, diccionari)
-    image = m.render()
-    image.save('map.png')
+    image = m.render(zoom = 12)
+    image.save(fitxer)
 
-    print("ended")
-    fitxer = 'draw.png'
-
-    print("thhh")
-
-    imatge = mapa.render()
-
-    print("renderised")
-
-    imatge.save(fitxer)
-
-    print("alwfnaw")
 
     bot.send_photo(chat_id=update.message.chat_id, photo=open(fitxer, 'rb'))
     os.remove(fitxer)

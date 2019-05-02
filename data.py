@@ -14,7 +14,7 @@ def precalculation():
     edge_list = list()
 
     for i in bicing.itertuples():
-        diccionari[i.Index] = (i.lat, i.lon)
+        diccionari[i.Index] = (i.lon, i.lat)
         G.add_node(i.Index)
         for j in bicing[bicing.index > i.Index].itertuples():
     	    edge_list.append((haversine((i.lat, i.lon), (j.lat, j.lon)), i.Index, j.Index))
@@ -35,16 +35,18 @@ def geometric_graph(edge_list, d, F):
 	return G
 
 def ploting(G, diccionari):
-    print("entered at least")
-    m = StaticMap(300, 400)
-    print("that surely works")
-
+    m = StaticMap(400, 500)
+    
     for i in G.nodes():
-        m.add_marker(CircleMarker(diccionari[i], 'red', 0.2))
+        m.add_marker(CircleMarker(diccionari[i], 'red', 1))
 
     for j in G.edges():
-        m.add_line(Line((diccionari[j[0]], diccionari[j[1]]), 'blue', 0.5))
+        coord1 = diccionari[j[0]]
+        coord2 = diccionari[j[1]]
 
+        m.add_line(Line((coord1, coord2), 'blue', 2))
+
+    
     return m
 
 
