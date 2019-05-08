@@ -96,6 +96,7 @@ def ruta(addresses, F, diccionari):
     last = int(-1)
     path[0] = 0
     path[len(path)-1] = -1
+    time = int()
 
     for i in path:
         m.add_marker(CircleMarker(diccionari[i], 'red', 1))
@@ -106,14 +107,16 @@ def ruta(addresses, F, diccionari):
 
             if i == path[1] or i == -1:
                 m.add_line(Line((coord1, coord2), 'green', 2))
+                time += 10*haversine()
 
             else:
                 m.add_line(Line((coord1, coord2), 'blue', 2))
+                time += 4*haversine()
         
         last = i
         
       
-    return m
+    return m, time
 
 
 
