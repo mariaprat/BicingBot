@@ -10,10 +10,14 @@ def distance(i, j, bicing):
 
 def geometric_graph(d):
     # Import station data.
-    url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-    bicing = DataFrame.from_records(pd.read_json(url)['data']['stations'], index='station_id')
+    url_info = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
+    url_status = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status'
     
-    G = nx.Graph()
+    bicing = DataFrame.from_records(pd.read_json(url_info)['data']['stations'], index='station_id')
+    bikes = DataFrame.from_records(pd.read_json(url_status)['data']['stations'], index='station_id')
+
+    bikes = bikes[['num_bikes_available', 'num_docks_available']]
+
     origin_lat, origin_lon = min(bicing.lat), min(bicing.lon)
     end_lat, end_lon = max(bicing.lat), max(bicing.lon)
     
@@ -22,23 +26,30 @@ def geometric_graph(d):
     grid = [[list() for j in range(cells_lon + 2)] for i in range(cells_lat + 1)]
     # grid[cells_lat][cells_lon]
     
+    position = dict()
+
     for station in bicing.itertuples():
+        position[station.index] = (station.lat, station.lon)
+
         distance_lat, distance_lon = station.lat - origin_lat, station.lon - origin_lon
         grid[1 + distance_lat//d][1 + distance_lon//d].append(station.index)
-        
+    
+    G = nx.Graph()
     G.add_nodes_from(bicing.index)
+
     for i in range(cells_lat):
         for j in range(1, cells_lon + 1):
             for k in range(0, len(grid[i][j])):
-                G.add_edges_from([grid[i][j][k], grid[i][j][k:]])
-                for m in range(-1,1):
-                    for l in range(len(grid[i+1][j+m])):
-                        if (distance(grid[i][j][k], grid[i+1][j+m][l], bicing)):
-                            G.add_edge(grid[i][j][k], grid[i+1][j+m][l])
-                for l in range(len(grid[i][j+1])):
-                        if (distance(grid[i][j][k], grid[i][j+1][l], bicing)):
-                            G.add_edge(grid[i][j][k], grid[i][j+1][l])
-    return G
+
+                v = grid[i][j][k]
+
+                for u in grid[i][j][k+1:] + grid[i][j+1][0:] + grid[i+1][j-1:j+2:1][0:]:
+                    dist = distance(v, u, position)
+
+                    if (dist <= d):
+                        G.add_weighted_edges_from([(u, v, dist)])
+                  
+    return G, position, bicing, bikes
 
 def ploting(G, diccionari):
     m = StaticMap(400, 500)
