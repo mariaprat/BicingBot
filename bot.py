@@ -10,13 +10,27 @@ from data import *
 #user_data (edge_list, G, diccionari)
 
 def start(bot, update, user_data):
-    user_data['edge_list'], user_data['G'], user_data['diccionari'] = precalculation();
-    bot.send_message(chat_id = update.message.chat_id, text = "Hello!")
-
-
+    name =  update.message.chat.first_name
+    message = "Hello, %s! Do you need something? I'm deBOTed to you." % (name)
+    bot.send_message(chat_id = update.message.chat_id, text = message)
+    
 def authors(bot, update):
-    bot.send_message(chat_id = update.message.chat_id, text = "My creators are Maria Prat and Max Balsells their emails are respectively maria.prat@est.fib.upc.edu and max.balsells.i@est.fib.upc.edu")
-
+    message1 = "My creators are Maria Prat and Max Balsells. "
+    message2 = "Their emails are respectively maria.prat@est.fib.upc.edu and max.balsells.i@est.fib.upc.edu. "
+    bot.send_message(chat_id = update.message.chat_id, text = message1 + message2)
+    
+def help(bot, update, user_data):
+    initial = "This bot helps you to use Bicing in Barcelona."
+    start = "Use /start to get a welcome message."
+    authors = "Use /authors to get information about my authors."
+    graph = "Use /graph <distance> to initialize a new graph with up-to-date data. Two stations will be connected the distance between them is less than <distance> (in meters).
+    nodes = "Use /nodes to get the number of stations in the current graph."
+    edges = "Use /edges to get the number of connections between stations in the current graph."
+    components = "Use /components to get the number of connected components in the current graph."
+    plotgraph = "Use /plotgraph to create a map with all the stations and connections between them."
+    route = "Use /route <origin>, <destiny> to create a map with the faster route between <origin> and <destiny>."
+    message = initial + start + authors + graph + nodes + edges + components + plotgraph + route
+    bot.send_message(chat_id = update.message.chat_id, text = message)
 
 def nodes(bot, update, user_data):
     bot.send_message(chat_id = update.message.chat_id, text = user_data['G'].number_of_nodes())
@@ -26,7 +40,6 @@ def components(bot, update, user_data):
 
 def edges(bot, update, user_data):
     bot.send_message(chat_id = update.message.chat_id, text = user_data['G'].number_of_edges())
-
 
 def plotgraph(bot, update, user_data):
     fitxer = 'map.png'
@@ -82,6 +95,6 @@ dispatcher.add_handler(CommandHandler('plotgraph', plotgraph, pass_user_data=Tru
 dispatcher.add_handler(CommandHandler('components', components, pass_user_data=True))
 dispatcher.add_handler(CommandHandler('graph', graph, pass_args = True, pass_user_data=True))
 dispatcher.add_handler(CommandHandler('route', route, pass_args = True, pass_user_data=True))
-
+dispatcher.add_handler(CommandHandler('help', route))
 
 updater.start_polling()
