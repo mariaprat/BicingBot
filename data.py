@@ -6,8 +6,6 @@ from geopy.geocoders import Nominatim
 from staticmap import StaticMap, CircleMarker, Line
 
 def precalculation():
-    url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-    bicing = DataFrame.from_records(pd.read_json(url)['data']['stations'], index='station_id')
     
     diccionari = dict()
     G = nx.Graph()
@@ -22,6 +20,41 @@ def precalculation():
     edge_list.sort()
     
     return edge_list, G, diccionari
+
+def distance(i, j, bicing):
+    
+
+def geometric_graph(d):
+    # Import station data.
+    url = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
+    bicing = DataFrame.from_records(pd.read_json(url)['data']['stations'], index='station_id')
+    
+    G = nx.Graph()
+    origin_lat, origin_lon = min(bicing.lat), min(bicing.lon)
+    end_lat, end_lon = max(bicing.lat), max(bicing.lon)
+    
+    cells_lat = (1 + end_lat - origin_lat)//d
+    cells_lon = (1 + end_lon - origin_lon)//d
+    grid = [[list() for j in range(cells_lon + 2)] for i in range(cells_lat + 2)]
+    # grid[cells_lat][cells_lon]
+    
+    for station in bicing.itertuples():
+        distance_lat, distance_lon = station.lat - origin_lat, station.lon - origin_lon
+        grid[1 + distance_lat//d][1 + distance_lon//d].append(station.index)
+        
+    G.add_nodes_from(bicing.index)
+    for i in range(1, cells_lat + 1):
+        for j in range(1, cells_lon + 1):
+            for k in range(0, len(grid[i][j])):
+                
+                G.add_edges_from([grid[i][j][k], grid[i][j][k:]])
+                G.add_edges_from([grid[i][j][k], grid[i][j+1][0:]])
+                
+                #G.add_edges_from([(G.nodes[k],G.nodes[node]) for node in G.nodes[k:]])
+                for jj in range (-1, 1):
+                    G.add_edges_from([grid[i][j][k], grid[i+1][j+jj][0:]])
+                
+    return G
 
 def geometric_graph(edge_list, d, F):
     G = nx.Graph()
@@ -84,7 +117,6 @@ def ruta(addresses, F, diccionari):
     for a in G.nodes():
         if (a > 0):
             coord = (diccionari[a][1], diccionari[a][0])
-             
             G.add_edge(0, a, weight = ratio*haversine(coords, coord))
             G.add_edge(-1, a, weight = ratio*haversine(coordt, coord))
 
@@ -117,7 +149,3 @@ def ruta(addresses, F, diccionari):
         
       
     return m, time
-
-
-
-
