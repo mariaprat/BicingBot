@@ -5,22 +5,6 @@ from haversine import haversine
 from geopy.geocoders import Nominatim
 from staticmap import StaticMap, CircleMarker, Line
 
-def precalculation():
-    
-    diccionari = dict()
-    G = nx.Graph()
-    edge_list = list()
-
-    for i in bicing.itertuples():
-        diccionari[i.Index] = (i.lon, i.lat)
-        G.add_node(i.Index)
-        for j in bicing[bicing.index > i.Index].itertuples():
-            edge_list.append((haversine((i.lat, i.lon), (j.lat, j.lon)), i.Index, j.Index))
-
-    edge_list.sort()
-    
-    return edge_list, G, diccionari
-
 def distance(i, j, bicing):
     
 
@@ -35,7 +19,7 @@ def geometric_graph(d):
     
     cells_lat = (1 + end_lat - origin_lat)//d
     cells_lon = (1 + end_lon - origin_lon)//d
-    grid = [[list() for j in range(cells_lon + 2)] for i in range(cells_lat + 2)]
+    grid = [[list() for j in range(cells_lon + 2)] for i in range(cells_lat + 1)]
     # grid[cells_lat][cells_lon]
     
     for station in bicing.itertuples():
@@ -43,28 +27,17 @@ def geometric_graph(d):
         grid[1 + distance_lat//d][1 + distance_lon//d].append(station.index)
         
     G.add_nodes_from(bicing.index)
-    for i in range(1, cells_lat + 1):
+    for i in range(cells_lat):
         for j in range(1, cells_lon + 1):
             for k in range(0, len(grid[i][j])):
-                
                 G.add_edges_from([grid[i][j][k], grid[i][j][k:]])
-                G.add_edges_from([grid[i][j][k], grid[i][j+1][0:]])
-                
-                #G.add_edges_from([(G.nodes[k],G.nodes[node]) for node in G.nodes[k:]])
-                for jj in range (-1, 1):
-                    G.add_edges_from([grid[i][j][k], grid[i+1][j+jj][0:]])
-                
-    return G
-
-def geometric_graph(edge_list, d, F):
-    G = nx.Graph()
-    G.add_nodes_from(F.nodes)
-    
-    i = 0
-    while edge_list[i][0] < d/1000:
-        i = i + 1
-        G.add_edge(edge_list[i][1], edge_list[i][2], weight = edge_list[i][0])
-
+                for m in range(-1,1):
+                    for l in range(len(grid[i+1][j+m])):
+                        if (distance(grid[i][j][k], grid[i+1][j+m][l], bicing)):
+                            G.add_edge(grid[i][j][k], grid[i+1][j+m][l])
+                for l in range(len(grid[i][j+1])):
+                        if (distance(grid[i][j][k], grid[i][j+1][l], bicing)):
+                            G.add_edge(grid[i][j][k], grid[i][j+1][l])
     return G
 
 def ploting(G, diccionari):
