@@ -5,25 +5,13 @@ from haversine import haversine
 from geopy.geocoders import Nominatim
 from staticmap import StaticMap, CircleMarker, Line
 
-def precalculation():
-    
-    diccionari = dict()
-    G = nx.Graph()
-    edge_list = list()
-
-    for i in bicing.itertuples():
-        diccionari[i.Index] = (i.lon, i.lat)
-        G.add_node(i.Index)
-        for j in bicing[bicing.index > i.Index].itertuples():
-            edge_list.append((haversine((i.lat, i.lon), (j.lat, j.lon)), i.Index, j.Index))
-
-    edge_list.sort()
-    
-    return edge_list, G, diccionari
-
 def distance(i, j, position):
-    return haversine(position[i], position[j]);
-   
+    return haversine(position[i], position[j])*1000;
+
+    
+def swap(p):
+    return (p[1], p[0])
+
 
 def geometric_graph(d):
     # Import station data.
@@ -34,22 +22,24 @@ def geometric_graph(d):
     bikes = DataFrame.from_records(pd.read_json(url_status)['data']['stations'], index='station_id')
 
     bikes = bikes[['num_bikes_available', 'num_docks_available']]
-
+    
     origin_lat, origin_lon = min(bicing.lat), min(bicing.lon)
     end_lat, end_lon = max(bicing.lat), max(bicing.lon)
-    
-    cells_lat = (1 + end_lat - origin_lat)//d
-    cells_lon = (1 + end_lon - origin_lon)//d
+
+    ratio_lat = d/(1000*haversine((10,30),(11,30)))
+    ratio_lon = d/(1000*haversine((end_lat, 10),(end_lat, 11))) 
+
+    cells_lat = int((ratio_lat/2 + end_lat - origin_lat)/ratio_lat)
+    cells_lon = int((ratio_lon/2 + end_lon - origin_lon)/ratio_lon)
     grid = [[list() for j in range(cells_lon + 2)] for i in range(cells_lat + 1)]
     # grid[cells_lat][cells_lon]
-    
+
     position = dict()
 
     for station in bicing.itertuples():
-        position[station.index] = (station.lat, station.lon)
-
+        position[station.Index] = (station.lat, station.lon)
         distance_lat, distance_lon = station.lat - origin_lat, station.lon - origin_lon
-        grid[1 + distance_lat//d][1 + distance_lon//d].append(station.index)
+        grid[int(distance_lat/ratio_lat)][int(1 + distance_lon/ratio_lon)].append(station.Index)
     
     G = nx.Graph()
     G.add_nodes_from(bicing.index)
@@ -57,48 +47,57 @@ def geometric_graph(d):
     for i in range(cells_lat):
         for j in range(1, cells_lon + 1):
             for k in range(0, len(grid[i][j])):
-
+                
                 v = grid[i][j][k]
-
-                for u in grid[i][j][k+1:] + grid[i][j+1][0:] + grid[i+1][j-1:j+2:1][0:]:
+                
+                #+ grid[i+1][j-1:j+2:1][0:]
+                for u in grid[i][j][k+1:] + grid[i][j+1][0:] + grid[i+1][j-1][0:] + grid[i+1][j][0:] + grid[i+1][j+1][0:]:
                     dist = distance(v, u, position)
-
+                    
                     if (dist <= d):
                         G.add_weighted_edges_from([(u, v, dist)])
-                  
+
+
     return G, position, bicing, bikes
 
 
 
-def distribute (requiredBikes, requiredDocks, G, bicing, bikes):
+def distribution (requiredBikes, requiredDocks, G, bicing, bikes):
     nbikes = 'num_bikes_available'
     ndocks = 'num_docks_available'
     
-    
     if (bikes[nbikes].sum() < requiredBikes * len(bikes.index)):
-        return -3
+        return 0, "There are not so many bicicles!"
 
     if (bikes[ndocks].sum() < requiredDocks * len(bikes.index)):
-        return -2
+        return 0, "There are not so many docks!"
     
-    if (min(stations[capacity]) < requiredDocks + requiredBikes):
-        return -1
+    if (min(bicing['capacity']) < requiredDocks + requiredBikes):
+        return 0, "There are stations whose capacity is less than " + str(requiredDocks + requiredBikes)
 
     F = nx.DiGraph()
-    F.add_nodes_from(G.nodes)
+    
+    for v in G.nodes:
+        F.add_node('g' + str(v))
 
     for e in G.edges:
         d = G.get_edge_data(*e)['weight']
-        F.add_weighted_edges_from([(e[0], e[1], d)])
-        F.add_weighted_edges_from([(e[1], e[0], d)])
-        
-
+        F.add_edge('g' + str(e[0]), 'g' + str(e[1]), weight = int(d))
+        F.add_edge('g' + str(e[1]), 'g' + str(e[0]), weight = int(d))
+    
     F.add_node('TOP') # The green node
     demand = 0
 
-    for st in bikes.itertuples():
+    for st in bicing.itertuples():
         idx = st.Index
         stridx = str(idx)
+        if idx not in bikes.index: 
+            F.remove_node(stridx) 
+
+    for st in bikes.itertuples():
+        idx = st.Index
+        stridx = 'g' + str(idx)
+        if idx not in bicing.index: continue
         
         # The blue (s), black (g) and red (t) nodes of the graph
         s_idx, t_idx = 's'+stridx, 't'+stridx
@@ -112,20 +111,27 @@ def distribute (requiredBikes, requiredDocks, G, bicing, bikes):
         F.add_node(t_idx, demand = req_bikes)
         
         demand += (req_bikes - req_docks)
-        
+
+        bluecap = max(0, b - requiredBikes)
+        redcap = max(0, d - requiredDocks)
+
         F.add_edge('TOP', s_idx)
         F.add_edge(t_idx, 'TOP')
-        F.add_edge(s_idx, idx)
-        F.add_edge(idx, t_idx)
+        F.add_edge(s_idx, stridx, capacity = bluecap)
+        F.add_edge(stridx, t_idx, capacity = redcap)
         
     F.nodes['TOP']['demand'] = -demand
 
-
     err = False
+
+    flowCost = float(1)
+    flowDict = dict()
+    information = str()
+    maxdistance = int(-1)
 
     try:
         flowCost, flowDict = nx.network_simplex(F)
-
+        
     except nx.NetworkXUnfeasible:
         err = True
         print("No solution could be found")
@@ -146,24 +152,29 @@ def distribute (requiredBikes, requiredDocks, G, bicing, bikes):
             for dst, b in flowDict[src].items():
                 if dst[0] == 'g' and b > 0:
                     idx_dst = int(dst[1:])
-                    print(idx_src, "->", idx_dst, " ", b, "bikes, distance", F.edges[src, dst]['weight'])
+                    
+                    if (b * F.edges[src, dst]['weight'] > maxdistance):
+                        information = "The edge with greatest cost is " + str(idx_src) + " -> " + str(idx_dst) + ": " + str(b) + " bikes, distance " + str(F.edges[src, dst]['weight']) + "m"
+                        maxdistance = b * F.edges[src, dst]['weight']
+
                     bikes.at[idx_src, nbikes] -= b
                     bikes.at[idx_dst, nbikes] += b 
                     bikes.at[idx_src, ndocks] += b 
                     bikes.at[idx_dst, ndocks] -= b
 
-    return flowCost
-
-
-def ploting(G, diccionari):
-    m = StaticMap(400, 500)
     
+    return flowCost/1000, information
+
+
+def ploting(G, position):
+    m = StaticMap(400, 500)
+
     for i in G.nodes():
-        m.add_marker(CircleMarker(diccionari[i], 'red', 1))
+        m.add_marker(CircleMarker(swap(position[i]), 'red', 1))
 
     for j in G.edges():
-        coord1 = diccionari[j[0]]
-        coord2 = diccionari[j[1]]
+        coord1 = swap(position[j[0]])
+        coord2 = swap(position[j[1]])
 
         m.add_line(Line((coord1, coord2), 'blue', 2))
 
@@ -182,46 +193,44 @@ def addressesTOcoordinates(addresses):
 
 def ruta(addresses, G, position):
     position[-1], position[0] = addressesTOcoordinates(addresses)
-    ratio = 10/4
+    
+    F = nx.Graph()
+    #weight is the time in minutes
 
     for e in G.edges:
         d = G.get_edge_data(*e)['weight']
-        F.add_weighted_edges_from([(e[0], e[1], d)])
-        
+        F.add_weighted_edges_from([(e[0], e[1], 0.006 * d)])
     
-    F.add_edge(-1, 0, weight = ratio * distance(-1, 0, position))
+    F.add_weighted_edges_from([(-1, 0, 0.015 * distance(-1, 0, position))])
 
     for a in F.nodes():
         if (a > 0):
-            F.add_edge(0, a, weight = ratio * distance(0, a, position))
-            F.add_edge(-1, a, weight = ratio * distance(-1, a, position))
+            F.add_weighted_edges_from([(0, a, 0.015 * distance(0, a, position))])
+            F.add_weighted_edges_from([(-1, a, 0.015 * distance(-1, a, position))])
 
-
-    path = nx.dijkstra_path(F,-1,0)
     
     m = StaticMap(400, 500)
 
     last = int(-1)
-    path[0] = 0
-    path[len(path)-1] = -1
-    time = int()
+    time = int(0)
 
+    path = nx.dijkstra_path(F, -1, 0)
     for i in path:
-        m.add_marker(CircleMarker(diccionari[i], 'red', 1))
+        m.add_marker(CircleMarker(swap(position[i]), 'red', 1))
 
-        if (i != 0):
-            coord1 = (diccionari[last], )
-            coord2 = (diccionari[i], )
+        if (i != -1):
+            coord1 = swap(position[last])
+            coord2 = swap(position[i])
+            e = (last, i)
+            time += F.get_edge_data(*e)['weight']
 
             if i == path[1] or i == -1:
                 m.add_line(Line((coord1, coord2), 'green', 2))
-                time += 10*haversine()
-
+                
             else:
                 m.add_line(Line((coord1, coord2), 'blue', 2))
-                time += 4*haversine()
-        
+                
         last = i
         
       
-    return m, time
+    return m, int(time)
