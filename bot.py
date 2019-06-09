@@ -47,14 +47,14 @@ def plotgraph(bot, update, user_data):
 
     m = ploting(user_data['G'], user_data['position'])
     image = m.render(zoom = 12)
-
     image.save(fitxer)
 
     bot.send_photo(chat_id=update.message.chat_id, photo=open(fitxer, 'rb'))
     os.remove(fitxer)
 
-def graph(bot, update, args, user_data):
+def graph(bot, update, args, user_data): # CAUTION:: small distances make it eternaly slow
     try:
+        if (len(args) == 0): args.append(1000)
         user_data['G'], user_data['position'], user_data['bicing'], user_data['bikes'] = geometric_graph(int(args[0]))
         bot.send_message(chat_id=update.message.chat_id, text= "ok")
 
