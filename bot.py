@@ -82,7 +82,7 @@ def route(bot, update, args, user_data):
 def distribute(bot, update, args, user_data):
     try:
         cost, information = distribution(int(args[0]), int(args[1]), user_data['G'], user_data['bicing'], user_data['bikes'])
-        bot.send_message(chat_id=update.message.chat_id, text= "Total cost of transferring bicycles: {} km".format(cost))
+        if (cost > 0): bot.send_message(chat_id=update.message.chat_id, text= "Total cost of transferring bicycles: {} km".format(cost))
         bot.send_message(chat_id=update.message.chat_id, text= information)
 
     except Exception as e:

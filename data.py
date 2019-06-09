@@ -133,34 +133,27 @@ def distribution (requiredBikes, requiredDocks, G, bicing, bikes):
         flowCost, flowDict = nx.network_simplex(F)
         
     except nx.NetworkXUnfeasible:
-        err = True
-        print("No solution could be found")
+        return 0, "No solution could be found"
 
-    except:
-        err = True
-        print("***************************************")
-        print("*** Fatal error: Incorrect graph model ")
-        print("***************************************")
+    
+    # We update the status of the stations according to the calculated transportation of bicycles
+    if (flowCost == 0): return 0, "All stations satisfy the conditions"
 
-    if not err:
-        print("The total cost of transferring bikes is", flowCost/1000, "km.")
+    for src in flowDict:
+        if src[0] != 'g': continue
+        idx_src = int(src[1:])
+        for dst, b in flowDict[src].items():
+            if dst[0] == 'g' and b > 0:
+                idx_dst = int(dst[1:])
+                
+                if (b * F.edges[src, dst]['weight'] > maxdistance):
+                    information = "The edge with greatest cost is " + str(idx_src) + " -> " + str(idx_dst) + ": " + str(b) + " bikes, distance " + str(F.edges[src, dst]['weight']) + "m"
+                    maxdistance = b * F.edges[src, dst]['weight']
 
-        # We update the status of the stations according to the calculated transportation of bicycles
-        for src in flowDict:
-            if src[0] != 'g': continue
-            idx_src = int(src[1:])
-            for dst, b in flowDict[src].items():
-                if dst[0] == 'g' and b > 0:
-                    idx_dst = int(dst[1:])
-                    
-                    if (b * F.edges[src, dst]['weight'] > maxdistance):
-                        information = "The edge with greatest cost is " + str(idx_src) + " -> " + str(idx_dst) + ": " + str(b) + " bikes, distance " + str(F.edges[src, dst]['weight']) + "m"
-                        maxdistance = b * F.edges[src, dst]['weight']
-
-                    bikes.at[idx_src, nbikes] -= b
-                    bikes.at[idx_dst, nbikes] += b 
-                    bikes.at[idx_src, ndocks] += b 
-                    bikes.at[idx_dst, ndocks] -= b
+                bikes.at[idx_src, nbikes] -= b
+                bikes.at[idx_dst, nbikes] += b 
+                bikes.at[idx_src, ndocks] += b 
+                bikes.at[idx_dst, ndocks] -= b
 
     
     return flowCost/1000, information
@@ -178,7 +171,6 @@ def ploting(G, position):
 
         m.add_line(Line((coord1, coord2), 'blue', 2))
 
-    
     return m
 
 def addressesTOcoordinates(addresses):
