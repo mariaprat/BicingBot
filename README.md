@@ -72,8 +72,8 @@ Crec que es pot borrar aquesta secció.
 
 ## Authors
 
-* **Max Balsells** - [email](max.balsells.i@est.fib.upc.edu)
-* **Maria Prat** - [email](maria.prat@est.fib.upc.edu)
+* **Max Balsells** - <max.balsells.i@est.fib.upc.edu>
+* **Maria Prat** - <maria.prat@est.fib.upc.edu>
 
 ## License
 
