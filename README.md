@@ -2,65 +2,43 @@
 
 Bicing is a bicycle sharing system in Barcelona with stations distributed throughout the city that include many docks for bikes. This project consists of a Telegram bot that answers questions related to geometric graphs defined over Bicing stations. Some of the answers are given by plotting graphs over maps to easily visualize the output. 
 
+PREGUNTA 1: On posem les funcions que fa? Opcions:
+ 1. Crear una secció que es digui features i posar els tests a la secció de features.
+ 2. Posar la secció de features abans de getting started (i canviar el nom de getting started per setup o alguna cosa així).
+ 
+ PREGUNTA 2: Creem una secció que es digui desing choices o algo així? Per explicar les decisions de disseny que haguem pres.
+ 
 ## Getting Started
+
+Canviaré la introducció d'aquesta secció quan tingui la resta fet.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+Aquí posem que no es necessita res més per executar el Bot que un dispositiu amb Telegram.
+També posem que si es vol fer servir el fitxer data s'ha de seguir el procediment de installing.
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
+Aquí fem dues parts, una que explica com instal·lar Telegram i engegar el Bot (s'explicarà més detalladament com funciona a la part de tests). L'altra explica com instal·lar requirements i tot això per utilitzar el fitxer data.py sol.
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+Això seran exemples sobre totes les funcions que faré quan el bot estigui obert i acabat.
+Poso també tests sobre les funcions de data.py.
 
 ### Break down into end to end tests
 
-Explain what these tests test and why
-
-```
-Give an example
-```
-
 ### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+Això ho entenc menys.
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+Aquí posem que està fet amb Python i les llibreries que utilitzem?
 
 ## Contributing
 
@@ -81,4 +59,5 @@ No sé si hem de posar alguna cosa.
 
 ## Acknowledgments
 
-Posem els repositoris del jordi-petit i ja està, no?
+Posem els repositoris del jordi-petit, la informació de Bicing i ja està no?
+O la informació de Bicing l'hauríem de posar a contributing?
