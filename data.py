@@ -5,10 +5,12 @@ from haversine import haversine
 from geopy.geocoders import Nominatim
 from staticmap import StaticMap, CircleMarker, Line
 
+# Given a dictionary (position) int --> (latitude, longitude) and two integers: i,j
+# computes the distance of position[i], poistion[j] in meters
 def distance(i, j, position):
     return haversine(position[i], position[j])*1000;
 
-    
+# Given a pair, swaps its components
 def swap(p):
     return (p[1], p[0])
 
