@@ -2,8 +2,8 @@
 
 Bicing is a bicycle sharing system in Barcelona with stations distributed throughout the city that include many docks for bikes. This project consists of a Telegram bot that answers questions related to geometric graphs defined over Bicing stations. Some of the answers are given by plotting graphs over maps to easily visualize the output. 
 
-PREGUNTA 1: On posem les funcions que fa? Opcions:
- 1. Crear una secció que es digui features i posar els tests a la secció de features.
+PREGUNTA 1: On posem les funcions que fa? Opcions: m'agrada més la 1a
+ **1. Crear una secció que es digui features i posar els tests a la secció de features.**
  2. Posar la secció de features abans de getting started (i canviar el nom de getting started per setup o alguna cosa així).
  
  PREGUNTA 2: Creem una secció que es digui desing choices o algo així? Per explicar les decisions de disseny que haguem pres.
@@ -34,19 +34,11 @@ Poso també tests sobre les funcions de data.py.
 
 ## Deployment
 
-Això ho entenc menys.
+Això ho entenc menys. **Jo ho trauria perquè no ho hentenc, sembla per gent super pro**
 
 ## Built With
 
-Aquí posem que està fet amb Python i les llibreries que utilitzem?
-
-## Contributing
-
-Potser podríem borrar això. 
-
-## Versioning
-
-Crec que es pot borrar aquesta secció.
+Aquí posem que està fet amb Python i les llibreries que utilitzem? **Jo faria això (+ Telegram)**
 
 ## Authors
 
@@ -55,9 +47,9 @@ Crec que es pot borrar aquesta secció.
 
 ## License
 
-No sé si hem de posar alguna cosa.
+No sé si hem de posar alguna cosa. **No idea neither**
 
 ## Acknowledgments
 
-Posem els repositoris del jordi-petit, la informació de Bicing i ja està no?
-O la informació de Bicing l'hauríem de posar a contributing?
+Posem els repositoris del jordi-petit, la informació de Bicing i ja està no? **Sí, també el helper de la llibreria NetworkX i el github de l'usuari que lexplica com fer un readme?**
+O la informació de Bicing l'hauríem de posar a contributing? **No, entenc que constributing és un apartat on expliques com pot contribuir la gent en el teu repositori git**
