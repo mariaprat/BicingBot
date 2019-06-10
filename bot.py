@@ -66,7 +66,24 @@ def route(bot, update, args, user_data):
     try:
         fitxer = "route_" + str(update.message.chat_id) + ".png"
 
-        m, time = ruta(" ".join(args), user_data['G'], user_data['position'])
+        m, time = unchecked_route(" ".join(args), user_data['G'], user_data['position'])
+        image = m.render(zoom = 12)
+        image.save(fitxer)
+
+        bot.send_photo(chat_id=update.message.chat_id, photo=open(fitxer, 'rb'))
+        bot.send_message(chat_id=update.message.chat_id, text= "If you follow this rute you will arrive at your destination in {} minutes".format(time))
+        os.remove(fitxer)
+        
+
+    except Exception as e:
+        print(e)
+        bot.send_message(chat_id=update.message.chat_id, text='💣')
+
+def valid_route(bot, update, args, user_data):
+    try:
+        fitxer = "valid_route_" + str(update.message.chat_id) + ".png"
+
+        m, time = true_route(" ".join(args), user_data['G'], user_data['position'], user_data['bikes'])
         image = m.render(zoom = 12)
         image.save(fitxer)
 
@@ -95,6 +112,7 @@ TOKEN = open('token.txt').read().strip()
 updater = Updater(token = TOKEN)
 dispatcher = updater.dispatcher
 
+
 dispatcher.add_handler(CommandHandler('start', start, pass_user_data=True))
 dispatcher.add_handler(CommandHandler('help', helpp))
 dispatcher.add_handler(CommandHandler('authors', authors))
@@ -104,6 +122,7 @@ dispatcher.add_handler(CommandHandler('plotgraph', plotgraph, pass_user_data=Tru
 dispatcher.add_handler(CommandHandler('components', components, pass_user_data=True))
 dispatcher.add_handler(CommandHandler('graph', graph, pass_args = True, pass_user_data=True))
 dispatcher.add_handler(CommandHandler('route', route, pass_args = True, pass_user_data=True))
+dispatcher.add_handler(CommandHandler('valid_route', valid_route, pass_args = True, pass_user_data=True))
 dispatcher.add_handler(CommandHandler('distribute', distribute, pass_args = True, pass_user_data=True))
 
 

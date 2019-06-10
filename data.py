@@ -29,7 +29,9 @@ def geometric_graph(d):
     end_lat, end_lon = max(bicing.lat), max(bicing.lon)
 
     ratio_lat = d/(1000*haversine((10,30),(11,30)))
-    ratio_lon = d/(1000*haversine((end_lat, 10),(end_lat, 11))) 
+    ratio_lon = d/(1000*haversine((end_lat, 10),(end_lat, 11)))
+    #ratio_lat represents how many degrees of latitude has distance d
+    #ratio_lon represents how many degrees of longitude has distance d 
 
     cells_lat = int((ratio_lat/2 + end_lat - origin_lat)/ratio_lat)
     cells_lon = int((ratio_lon/2 + end_lon - origin_lon)/ratio_lon)
@@ -52,7 +54,7 @@ def geometric_graph(d):
                 
                 v = grid[i][j][k]
                 
-                #+ grid[i+1][j-1:j+2:1][0:]
+                #+ grid[i+1][j-1:j+2:1][0:][(x, y) for x in [1,2,3] for y in [3,1,4] if x != y]
                 for u in grid[i][j][k+1:] + grid[i][j+1][0:] + grid[i+1][j-1][0:] + grid[i+1][j][0:] + grid[i+1][j+1][0:]:
                     dist = distance(v, u, position)
                     
@@ -64,7 +66,7 @@ def geometric_graph(d):
 
 
 
-def distribution (requiredBikes, requiredDocks, G, bicing, bikes):
+def distribution (requiredBikes, requiredDocks, G, bicing, bikes): #IMPORTANT: CHECK ISOLATED VERTICES
     nbikes = 'num_bikes_available'
     ndocks = 'num_docks_available'
     
@@ -185,30 +187,13 @@ def addressesTOcoordinates(addresses):
     except:
         return None
 
-def ruta(addresses, G, position):
-    position[-1], position[0] = addressesTOcoordinates(addresses)
-    
-    F = nx.Graph()
-    #weight is the time in minutes
-
-    for e in G.edges:
-        d = G.get_edge_data(*e)['weight']
-        F.add_weighted_edges_from([(e[0], e[1], 0.006 * d)])
-    
-    F.add_weighted_edges_from([(-1, 0, 0.015 * distance(-1, 0, position))])
-
-    for a in F.nodes():
-        if (a > 0):
-            F.add_weighted_edges_from([(0, a, 0.015 * distance(0, a, position))])
-            F.add_weighted_edges_from([(-1, a, 0.015 * distance(-1, a, position))])
-
-    
+def dijkstra_route(G, position):
     m = StaticMap(400, 500)
 
     last = int(-1)
     time = int(0)
 
-    path = nx.dijkstra_path(F, -1, 0)
+    path = nx.dijkstra_path(G, -1, 0)
     for i in path:
         m.add_marker(CircleMarker(swap(position[i]), 'red', 1))
 
@@ -216,7 +201,7 @@ def ruta(addresses, G, position):
             coord1 = swap(position[last])
             coord2 = swap(position[i])
             e = (last, i)
-            time += F.get_edge_data(*e)['weight']
+            time += G.get_edge_data(*e)['weight']
 
             if i == path[1] or i == -1:
                 m.add_line(Line((coord1, coord2), 'green', 2))
@@ -226,5 +211,56 @@ def ruta(addresses, G, position):
                 
         last = i
         
-      
     return m, int(time)
+
+
+def unchecked_route(addresses, G, position):
+    position[-1], position[0] = addressesTOcoordinates(addresses)
+    
+    F = nx.Graph()
+    #weight is the time in minutes
+    
+    for e in G.edges:
+        d = G.get_edge_data(*e)['weight']
+        F.add_edge(e[0], e[1], weight = 0.006 * d)
+    
+    F.add_edge(-1, 0, weight = 0.015 * distance(-1, 0, position))
+
+    for a in F.nodes():
+        if (a > 0):
+            F.add_edge(0, a, weight = 0.015 * distance(0, a, position))
+            F.add_edge(-1, a, weight = 0.015 * distance(-1, a, position))
+
+    return dijkstra_route(F, position)
+
+def true_route(addresses, G, position, bikes):
+    position[-1], position[0] = addressesTOcoordinates(addresses)
+    
+    F = nx.Graph()
+    #weight is the time in minutes
+
+    bikes_info = [0] * (1 + bikes.tail(1).index.item()) 
+    # 0 means no information, 1 means no bikes, 2 means no docks, else 3
+
+    for st in bikes.itertuples():
+        idx = st.Index
+        b, d = st.num_bikes_available, st.num_docks_available
+
+        if (b == 0): bikes_info[idx] = 1
+        elif (d == 0): bikes_info[idx] = 2
+        else: bikes_info[idx] = 3 
+
+    for e in G.edges:
+        d = G.get_edge_data(*e)['weight']
+        F.add_edge(e[0], e[1], weight = 0.006 * d)
+
+    
+    F.add_edge(-1, 0, weight = 0.015 * distance(-1, 0, position))
+
+    for a in F.nodes():
+        if (a > 0 and bikes_info[a] != 0):
+            if (bikes_info[a] != 2): F.add_edge(0, a, weight = 0.015 * distance(0, a, position))
+            if (bikes_info[a] != 1): F.add_edge(-1, a, weight = 0.015 * distance(-1, a, position))
+
+    return dijkstra_route(F, position)
+
