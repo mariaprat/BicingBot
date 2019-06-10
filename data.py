@@ -64,21 +64,7 @@ def geometric_graph(d):
 
     return G, position, bicing, bikes
 
-
-
-def distribution (requiredBikes, requiredDocks, G, bicing, bikes): #IMPORTANT: CHECK ISOLATED VERTICES
-    nbikes = 'num_bikes_available'
-    ndocks = 'num_docks_available'
-    
-    if (bikes[nbikes].sum() < requiredBikes * len(bikes.index)):
-        return 0, "There are not so many bicicles!"
-
-    if (bikes[ndocks].sum() < requiredDocks * len(bikes.index)):
-        return 0, "There are not so many docks!"
-    
-    if (min(bicing['capacity']) < requiredDocks + requiredBikes):
-        return 0, "There are stations whose capacity is less than " + str(requiredDocks + requiredBikes)
-
+def build_flow_graph(requiredBikes, requiredDocks, G, bicing, bikes):
     F = nx.DiGraph()
     
     for v in G.nodes:
@@ -126,8 +112,13 @@ def distribution (requiredBikes, requiredDocks, G, bicing, bikes): #IMPORTANT: C
         
     F.nodes['TOP']['demand'] = -demand
 
-    err = False
+    return F
 
+
+def update (F, bikes):
+    nbikes = 'num_bikes_available'
+    ndocks = 'num_docks_available'
+    
     flowCost = float(1)
     flowDict = dict()
     information = str()
@@ -161,6 +152,23 @@ def distribution (requiredBikes, requiredDocks, G, bicing, bikes): #IMPORTANT: C
 
     
     return flowCost/1000, information
+
+
+def distribution (requiredBikes, requiredDocks, G, bicing, bikes): #IMPORTANT: CHECK ISOLATED VERTICES
+    nbikes = 'num_bikes_available'
+    ndocks = 'num_docks_available'
+    
+    if (bikes[nbikes].sum() < requiredBikes * len(bikes.index)):
+        return 0, "There are not so many bicicles!"
+
+    if (bikes[ndocks].sum() < requiredDocks * len(bikes.index)):
+        return 0, "There are not so many docks!"
+    
+    if (min(bicing['capacity']) < requiredDocks + requiredBikes):
+        return 0, "There are stations whose capacity is less than " + str(requiredDocks + requiredBikes)
+
+    F = build_flow_graph(requiredBikes, requiredDocks, G, bicing, bikes)
+    return update(F, bikes)
 
 
 def ploting(G, position):
