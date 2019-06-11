@@ -132,12 +132,16 @@ def graph(bot, update, args, user_data):
             message(bot, update, warning_pos_num)
         else:
             # Import station data.
-            url_info = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
-            url_status = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status'
-            bicing = DataFrame.from_records(pd.read_json(url_info)['data']['stations'], index='station_id')
-            bikes = DataFrame.from_records(pd.read_json(url_status)['data']['stations'], index='station_id')
-            bicing = bicing[['address', 'lat', 'lon']]
-            bikes = bikes[['num_bikes_available', 'num_docks_available']]
+            url_info = ui = ('https://api.bsmsa.eu/ext/api/bsm/gbfs/'
+                        'v2/en/station_information')
+            url_status = us = ('https://api.bsmsa.eu/ext/api/bsm/gbfs/'
+                          'v2/en/station_status')
+            b1 = DataFrame.from_records(pd.read_json(u1)['data']['stations'], 
+                                        index='station_id')
+            b2 = DataFrame.from_records(pd.read_json(u2)['data']['stations'], 
+                                        index='station_id')
+            bicing = b1[['address', 'lat', 'lon']]
+            bikes = b2[['num_bikes_available', 'num_docks_available']]
             
             results = geometric_graph(dist, bicing)
             user_data['G'] = results['G']
