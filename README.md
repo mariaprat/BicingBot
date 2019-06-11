@@ -1,46 +1,126 @@
 # Telegram Bicing Bot 🚲
 
-Bicing is a bicycle sharing system in Barcelona with stations distributed throughout the city that include many docks for bikes. This project consists of a Telegram Bot that answers questions related to geometric graphs defined over Bicing stations. Some of the answers are given by plotting graphs over maps to easily visualize the output. 
+Bicing is a bicycle sharing system in Barcelona with stations distributed
+throughout the city that include many docks for bikes. This project consists
+of a Telegram Bot that answers questions related to geometric graphs defined
+over Bicing stations. Some of the answers are given by plotting graphs over
+maps to easily visualize the output.
 
 ## Project Structure
 
 Our project has two main parts:
 
 * **`bot.py`**: This file contains the Telegram Bot.
-* **`data.py`**: This file contains functions related to geometric graphs and other related topics that are used by the Bot but can be used separately.
- 
+* **`data.py`**: This file contains functions related to geometric graphs and
+other related topics that are used by the Bot. Although the functions are
+oriented to Bicing database, they can be easily modifiable to work with other
+similar databases.
+
 ## Getting Started
 
-The following instructions will help you to install all the prerequisites to run and use both the Telegram Bot and the functions its based on.
+The following instructions will help you to install all the prerequisites to
+run and use both the Telegram Bot and the functions it's based on.
 
 ### Prerequisites
 
 #### To use the Bot
 
-To use the Telegram Bot, you only need to have a device with Telegram installed. You can download it to your Desktop or use it online in [this webpage](https://telegram.org/) or download it in your preferred app store. After downloading Telegram, you will need to create a free account :).
+To use the Telegram Bot, you only need to have a device with Telegram installed
+on it. You can download it to your Desktop or use it online in
+[this webpage](https://telegram.org/) or download it in your preferred app store
+if you are using a smartphone. After downloading Telegram, you will need to
+create an account, but don't worry, it's free! 😊
 
 #### To use the code behind the Bot
 
-The Bot uses Python functions related to geometric graphs. If you want to run this code separately, you will need to install Python 3 in your computer. You can find the instructions to do so in the official [webpage](https://www.python.org/downloads/).
+The Bot uses Python functions related to geometric graphs. If you want to run
+this code separately, you will need to install Python 3 in your computer. You
+can find the instructions to do so in the official
+[webpage](https://www.python.org/downloads/).
 
 ### Installing
 
-Nothing else is needed to use the Telegram Bot. However, to use the Python functions you will have to install some libraries. Run the following commands in any directory with the `requirements.txt` file:
+Nothing else is needed to use the Telegram Bot. However, to use the Python
+functions you will have to install some libraries. Run the following command
+in any directory with the `requirements.txt` file in it:
 
 ```{bash}
 pip install -r requirements.txt
 ```
-You shouldn't have any problemes using `pip` because it comes togheter with latest Python versions. If some error occurs, just upgrade your `pip` version or install `pip` by following this [link](https://pip.pypa.io/en/stable/installing/).
+You shouldn't have any problemes using `pip` because it comes together with
+the latest Python versions. If some error occurs, just upgrade your `pip`
+version or install `pip` by following this
+[link](https://pip.pypa.io/en/stable/installing/).
 
 ## Features
 
+In the [Commands](#Commands) section you'll find the available commands for the
+Bot, that can also handle most [errors and warnings](#errors and warnings).
+
+### Commands
+
+Bot commands follow a `/command <arguments>` structure. Available commands are:
+
+- `/start`
+    Gives a welcoming message to the user.
+- `/authors`
+    Gives information and emails of the authors.
+- `/_help`
+    Gives brief instructions about the Bot commands.
+- `/graph <distance>`
+    If `distance` (in meters) is specified and it's a float number, creates a geometric graph
+    over Bicing stations. All the stations are the nodes and two of them are
+    connected if their distance is lower or equal to `distance`. If it's not
+    specified, the default value is 1000.
+- `/nodes`
+    Gives the number of nodes (stations) of the (previously created) graph.
+- `/components`
+    Gives the number of connected components of the (previously created) graph.
+- `/edges`
+    Gives the number of edges of the (previously created) graph.
+- `/plotgraph`
+    Shows a map of the current graph with its edges.
+- `/route <origin>, <destination>`
+    Given two valid addresses in Barcelona, finds the shortest route between
+    them. The given route has a walking part towards the first Bicing station (if
+    it's the case), a cycling path between connected stations and, finally, it can have
+    another walking part towards the destination. It also gives a linear approximation
+    of the time that it takes to travel between the addresses, considering that
+    you travel on foot at 4 km/h and at 10 km/h by bike.
+- `/valid_route <origin>, <destination>`
+    It does the same as the previous `/route` command. However, it only considers
+    stations with at least one bike and a free dock. **REVISAAAAAAAAAAAAAAAAAAAAAAAR**
+- `/distribute <min_bikes>, <min_docks>` **REVISAAAAAAAAAAAAAAAAAAAAAAAR COMA**
+    Given a minimum number of bikes for each station `min_bikes` and a minimum
+    number of empty docks for each station `min_docks`, this command returns the
+    minimum transportation cost of bikes and the edge with the highest cost. We
+    can move bikes around the city to get to a solution in which all the stations
+    meet the requirements. The cost of a solution is defined as the sum of the
+    distances of each moving bike, then the edge with the highest cost is the one
+    with maximum weight*number of moving bikes. Another restriction is that nodes
+    that meet the constraints must have a zero flow.
+
+### Errors and warnings
+
+The most common errors and possible warnings are handled by the Bot, that
+returns a message to the user. The authors have tried to made these messages
+both brief and clear.
+
 ## Execution and testing
+
+To execute the Telegram Bot, search for it username in Telegram's search bar.
+Its username is @bicing2019.
 
 ### Telegram Bot Tests
 
 ### `data.py` Tests
 
+I'm not sure if they are necessary.
+
 ## Design Choices
+
+I don't know if there is anything interesting to add here. Maybe the grid
+thing? Also, what Cortadella said.
 
 ## Built With
 
