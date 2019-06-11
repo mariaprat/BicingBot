@@ -83,48 +83,37 @@ def build_flow_graph(requiredBikes, requiredDocks, G, bicing, bikes):
         F.add_edge('g' + str(e[0]), 'g' + str(e[1]), weight = int(d))
         F.add_edge('g' + str(e[1]), 'g' + str(e[0]), weight = int(d))
     
-    F.add_node('TOP') # The green node
-    demand = 0
-
+    F.add_node('TOP', demand = 0) # The node to compensate demands
+    
     # Remove nodes of which we have no information
     for st in bicing.itertuples():
-        idx = st.Index
-        stridx = str(idx)
-        if idx not in bikes.index: 
-            F.remove_node(stridx) 
+        if st.Index not in bikes.index: F.remove_node(str(st.Index)) 
 
     for st in bikes.itertuples():
         idx = st.Index
         stridx = 'g' + str(idx)
         if idx not in bicing.index: continue
         
-        # The blue (s), black (g) and red (t) nodes of the graph
+        # The blue (sg) and red (tg) nodes of the graph
         s_idx, t_idx = 's'+stridx, 't'+stridx
-            
+        
         b, d = st.num_bikes_available, st.num_docks_available
-
-        req_bikes = max(0, requiredBikes - b)
-        req_docks = max(0, requiredDocks - d)
+        req_bikes, req_docks = max(0, requiredBikes - b), max(0, requiredDocks - d)
+        bluecap, redcap = max(0, b - requiredBikes), max(0, d - requiredDocks)
 
         # In red nodes put as demand the number of bikes to receive
-        # In red nodes put as demand minus the number of docks to receive (since its a sink node)
+        # In red nodes put as demand minus the number of docks to receive (since its a source node)
         F.add_node(s_idx, demand = -req_docks)
         F.add_node(t_idx, demand = req_bikes)
         
-        demand += (req_bikes - req_docks)
-
-        bluecap = max(0, b - requiredBikes)
-        redcap = max(0, d - requiredDocks)
+        # Impose total demand is 0
+        F.nodes['TOP']['demand'] -= (req_bikes - req_docks)
 
         # Add capcity so that we are left with at least the minium amount of docks or bikes
-        F.add_edge('TOP', s_idx)
-        F.add_edge(t_idx, 'TOP')
+        F.add_edge('TOP', s_idx), F.add_edge(t_idx, 'TOP')
         F.add_edge(s_idx, stridx, capacity = bluecap)
         F.add_edge(stridx, t_idx, capacity = redcap)
     
-    # Impose total demand is 0
-    F.nodes['TOP']['demand'] = -demand
-
     return F
 
 # Given the flow graph of the stations of Barcelona and the dataframe which constains the 
@@ -307,4 +296,3 @@ def true_route(addresses, G, position, bikes):
             if (bikes_info[a] != 1): F.add_edge(-1, a, weight = 0.015 * distance(-1, a, position))
 
     return dijkstra_route(F, position)
-
