@@ -62,43 +62,65 @@ Bot, that can also handle most [errors and warnings](#errors and warnings).
 Bot commands follow a `/command <arguments>` structure. Available commands are:
 
 - `/start`
-    Gives a welcoming message to the user.
+
+Gives a welcoming message to the user.
+
 - `/authors`
-    Gives information and emails of the authors.
+
+Gives information and emails of the authors.
+
 - `/_help`
-    Gives brief instructions about the Bot commands.
+
+Gives brief instructions about the Bot commands.
+    
 - `/graph <distance>`
-    If `distance` (in meters) is specified and it's a float number, creates a geometric graph
-    over Bicing stations. All the stations are the nodes and two of them are
-    connected if their distance is lower or equal to `distance`. If it's not
-    specified, the default value is 1000.
+
+If `distance` (in meters) is specified and it's a float number, creates a geometric graph
+over Bicing stations. All the stations are the nodes and two of them are
+connected if their distance is lower or equal to `distance`. If it's not
+specified, the default value is 1000.
+    
 - `/nodes`
-    Gives the number of nodes (stations) of the (previously created) graph.
+
+Gives the number of nodes (stations) of the (previously created) graph.
+    
+
 - `/components`
-    Gives the number of connected components of the (previously created) graph.
+
+Gives the number of connected components of the (previously created) graph.
+
 - `/edges`
-    Gives the number of edges of the (previously created) graph.
+
+Gives the number of edges of the (previously created) graph.
+
 - `/plotgraph`
-    Shows a map of the current graph with its edges.
+
+Shows a map of the current graph with its edges.
+
 - `/route <origin>, <destination>`
-    Given two valid addresses in Barcelona, finds the shortest route between
-    them. The given route has a walking part towards the first Bicing station (if
-    it's the case), a cycling path between connected stations and, finally, it can have
-    another walking part towards the destination. It also gives a linear approximation
-    of the time that it takes to travel between the addresses, considering that
-    you travel on foot at 4 km/h and at 10 km/h by bike.
+
+Given two valid addresses in Barcelona, finds the shortest route between
+them. The given route has a walking part towards the first Bicing station (if
+it's the case), a cycling path between connected stations and, finally, it can have
+another walking part towards the destination. It also gives a linear approximation
+of the time that it takes to travel between the addresses, considering that
+you travel on foot at 4 km/h and at 10 km/h by bike.
+
 - `/valid_route <origin>, <destination>`
-    It does the same as the previous `/route` command. However, it only considers
-    stations with at least one bike and a free dock. **REVISAAAAAAAAAAAAAAAAAAAAAAAR**
+
+It does the same as the previous `/route` command. However, it only considers
+stations with at least one bike and a free dock. **REVISAAAAAAAAAAAAAAAAAAAAAAAR**
+
 - `/distribute <min_bikes>, <min_docks>` **REVISAAAAAAAAAAAAAAAAAAAAAAAR COMA**
-    Given a minimum number of bikes for each station `min_bikes` and a minimum
-    number of empty docks for each station `min_docks`, this command returns the
-    minimum transportation cost of bikes and the edge with the highest cost. We
-    can move bikes around the city to get to a solution in which all the stations
-    meet the requirements. The cost of a solution is defined as the sum of the
-    distances of each moving bike, then the edge with the highest cost is the one
-    with maximum weight*number of moving bikes. Another restriction is that nodes
-    that meet the constraints must have a zero flow.
+
+Given a minimum number of bikes for each station `min_bikes` and a minimum
+number of empty docks for each station `min_docks`, this command returns the
+minimum transportation cost of bikes and the edge with the highest cost. We
+can move bikes around the city to get to a solution in which all the stations
+meet the requirements. The cost of a solution is defined as the sum of the
+distances of each moving bike, then the edge with the highest cost is the one
+with maximum weight*number of moving bikes. Another restriction is that nodes
+that meet the constraints must have a zero flow.
 
 ### Errors and warnings
 
