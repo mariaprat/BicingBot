@@ -14,7 +14,10 @@ def distance(i, j, position):
 def swap(p):
     return (p[1], p[0])
 
-
+# Given a distance returns a weighted geometric graph (G) with the bicing stations of Barcelona
+# such that the edges have as weight the distance among stations, and only stations whose
+# distance is less than d are connected, it also returns a dictionary from G.nodes to (lat, lon)
+# and the data frames of the bicing information
 def geometric_graph(d):
     # Import station data.
     url_info = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
@@ -64,9 +67,14 @@ def geometric_graph(d):
 
     return G, position, bicing, bikes
 
+# Given the minimum amount of bikes and docks that each stations has to have, the graph
+# representing the bicing stations and two datarames with inforamtion about those stations
+# it returns a flow graph, so that when trying to find its minimum flow we get the best 
+# way to transport the bikes among the stations so that the given conditions are satisfied
 def build_flow_graph(requiredBikes, requiredDocks, G, bicing, bikes):
     F = nx.DiGraph()
     
+    # We copy the information of G
     for v in G.nodes:
         F.add_node('g' + str(v))
 
@@ -78,6 +86,7 @@ def build_flow_graph(requiredBikes, requiredDocks, G, bicing, bikes):
     F.add_node('TOP') # The green node
     demand = 0
 
+    # Remove nodes of which we have no information
     for st in bicing.itertuples():
         idx = st.Index
         stridx = str(idx)
@@ -97,6 +106,8 @@ def build_flow_graph(requiredBikes, requiredDocks, G, bicing, bikes):
         req_bikes = max(0, requiredBikes - b)
         req_docks = max(0, requiredDocks - d)
 
+        # In red nodes put as demand the number of bikes to receive
+        # In red nodes put as demand minus the number of docks to receive (since its a sink node)
         F.add_node(s_idx, demand = -req_docks)
         F.add_node(t_idx, demand = req_bikes)
         
@@ -105,17 +116,22 @@ def build_flow_graph(requiredBikes, requiredDocks, G, bicing, bikes):
         bluecap = max(0, b - requiredBikes)
         redcap = max(0, d - requiredDocks)
 
+        # Add capcity so that we are left with at least the minium amount of docks or bikes
         F.add_edge('TOP', s_idx)
         F.add_edge(t_idx, 'TOP')
         F.add_edge(s_idx, stridx, capacity = bluecap)
         F.add_edge(stridx, t_idx, capacity = redcap)
-        
+    
+    # Impose total demand is 0
     F.nodes['TOP']['demand'] = -demand
 
     return F
 
-
-def update (F, bikes):
+# Given the flow graph of the stations of Barcelona and the dataframe which constains the 
+# inforamtion of each station, it computes the minimum flow of the graph and updates
+# the information of the dataframe. It retrns the cost of the minimum flow and the 
+# edge with highest cost
+def update (G, bikes):
     nbikes = 'num_bikes_available'
     ndocks = 'num_docks_available'
     
@@ -125,7 +141,7 @@ def update (F, bikes):
     maxdistance = int(-1)
 
     try:
-        flowCost, flowDict = nx.network_simplex(F)
+        flowCost, flowDict = nx.network_simplex(G)
         
     except nx.NetworkXUnfeasible:
         return 0, "No solution could be found"
@@ -141,9 +157,9 @@ def update (F, bikes):
             if dst[0] == 'g' and b > 0:
                 idx_dst = int(dst[1:])
                 
-                if (b * F.edges[src, dst]['weight'] > maxdistance):
-                    information = "The edge with greatest cost is " + str(idx_src) + " -> " + str(idx_dst) + ": " + str(b) + " bikes, distance " + str(F.edges[src, dst]['weight']) + "m"
-                    maxdistance = b * F.edges[src, dst]['weight']
+                if (b * G.edges[src, dst]['weight'] > maxdistance):
+                    information = "The edge with greatest cost is " + str(idx_src) + " -> " + str(idx_dst) + ": " + str(b) + " bikes, distance " + str(G.edges[src, dst]['weight']) + "m"
+                    maxdistance = b * G.edges[src, dst]['weight']
 
                 bikes.at[idx_src, nbikes] -= b
                 bikes.at[idx_dst, nbikes] += b 
@@ -153,8 +169,12 @@ def update (F, bikes):
     
     return flowCost/1000, information
 
-
-def distribution (requiredBikes, requiredDocks, G, bicing, bikes): #IMPORTANT: CHECK ISOLATED VERTICES
+# Given a minimum number of bikes and docks fro each station, a geometric graph whose nodes are 
+# the stations and with weighted edges where the weight is the distance (in meters) among stations
+# and given two data frames with the information of the station (capcity, number of bikes and docks)
+# returns the minimum cost of transporting bikes among stations so that the conditions are satisfied
+# and the transportation route with highest cost (if it can be done)
+def distribution (requiredBikes, requiredDocks, G, bicing, bikes):
     nbikes = 'num_bikes_available'
     ndocks = 'num_docks_available'
     
@@ -171,6 +191,8 @@ def distribution (requiredBikes, requiredDocks, G, bicing, bikes): #IMPORTANT: C
     return update(F, bikes)
 
 
+# Given a graph G and a dictionary from G.nodes to (lat, lon) returns a map
+# where each node is a red dot and each edge is a blue segment
 def ploting(G, position):
     m = StaticMap(400, 500)
 
@@ -185,6 +207,7 @@ def ploting(G, position):
 
     return m
 
+# Given two addresses returns its coordinates (lat, lon)
 def addressesTOcoordinates(addresses):
     try:
         geolocator = Nominatim(user_agent="bicing_bot")
@@ -195,6 +218,8 @@ def addressesTOcoordinates(addresses):
     except:
         return None
 
+# Given a weighted graph G and a dictionary from G.nodes to (lat, lon)
+# returns a map with a dijkstra path from node -1 to 0 and its total weight
 def dijkstra_route(G, position):
     m = StaticMap(400, 500)
 
@@ -211,10 +236,10 @@ def dijkstra_route(G, position):
             e = (last, i)
             time += G.get_edge_data(*e)['weight']
 
-            if i == path[1] or i == -1:
+            if i == path[1] or i == -1: # Walking 
                 m.add_line(Line((coord1, coord2), 'green', 2))
                 
-            else:
+            else: # Riding
                 m.add_line(Line((coord1, coord2), 'blue', 2))
                 
         last = i
@@ -222,18 +247,22 @@ def dijkstra_route(G, position):
     return m, int(time)
 
 
+# Given two addresses, a graph G and a dictionary from G.ndoes to (lat, lon)
+# returns a map with the route between the two addreses with green edges when
+# walking and blue when riding a bike (among the edges of G) it also returns the
+# total amount of time to complete this route
 def unchecked_route(addresses, G, position):
     position[-1], position[0] = addressesTOcoordinates(addresses)
     
     F = nx.Graph()
-    #weight is the time in minutes
+    # The weight of F will be the time in minutes that it costs to go through that edge
     
     for e in G.edges:
         d = G.get_edge_data(*e)['weight']
         F.add_edge(e[0], e[1], weight = 0.006 * d)
     
+    # We add all conection to the starting and end node
     F.add_edge(-1, 0, weight = 0.015 * distance(-1, 0, position))
-
     for a in F.nodes():
         if (a > 0):
             F.add_edge(0, a, weight = 0.015 * distance(0, a, position))
@@ -241,12 +270,19 @@ def unchecked_route(addresses, G, position):
 
     return dijkstra_route(F, position)
 
+
+# Given two addresses, a graph G and a dictionary from G.ndoes to (lat, lon) and 
+# a data frame indicating the number of bikes and docks in each station
+# returns a map with the route between the two addreses with green edges when
+# walking and blue when riding a bike (among the edges of G), such that the first
+# station of the route has a bike and the last has a dock. It also returns the
+# total amount of time to complete this route
 def true_route(addresses, G, position, bikes):
     position[-1], position[0] = addressesTOcoordinates(addresses)
     
     F = nx.Graph()
-    #weight is the time in minutes
-
+    # The weight of F will be the time in minutes that it costs to go through that edge
+    
     bikes_info = [0] * (1 + bikes.tail(1).index.item()) 
     # 0 means no information, 1 means no bikes, 2 means no docks, else 3
 
@@ -261,10 +297,10 @@ def true_route(addresses, G, position, bikes):
     for e in G.edges:
         d = G.get_edge_data(*e)['weight']
         F.add_edge(e[0], e[1], weight = 0.006 * d)
-
     
     F.add_edge(-1, 0, weight = 0.015 * distance(-1, 0, position))
 
+    # Only stations with bikes are conected to the start and only stations with docks are conected to the end
     for a in F.nodes():
         if (a > 0 and bikes_info[a] != 0):
             if (bikes_info[a] != 2): F.add_edge(0, a, weight = 0.015 * distance(0, a, position))
