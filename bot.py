@@ -42,8 +42,8 @@ def is_float(x):
 def start(bot, update, user_data):
     # Saves username's first name.
     name = update.message.chat.first_name
-    text = "Hello, %s! Do you need something? I'm deBOTed to" +
-           "help you." % (name)
+    text = "Hello, %s! Do you need something? I'm deBOTed to" % (name) +
+           "help you." 
     message(bot, update, text)
 
 
@@ -57,17 +57,17 @@ def authors(bot, update):
 
 # Gives information about bot commands and short instructions to use them.
 def _help(bot, update):
-    text = ("This bot helps you to use Bicing in Barcelona. Use /start to ",
-    "get a welcome message. Use /authors to get information about my authors.",
-    " Use /graph <distance> to initialize a new graph with up-to-date data. ",
-    "Two stations will be connected the distance between them is less than ",
-    "<distance> (in meters). Use /nodes to get the number of stations in the ",
-    "current graph. Use /edges to get the number of connections between ",
-    "stations in the current graph. Use /components to get the number of ",
-    "connected components in the current graph. Use /plotgraph to create a ",
-    "map with all the stations and connections between them. Use /route ",
-    "<origin>, <destiny> to create a map with the faster route between ",
-    "<origin> and <destiny>.")
+    text = "This bot helps you to use Bicing in Barcelona. Use /start to " +
+    "get a welcome message. Use /authors to get information about my authors." +
+    " Use /graph <distance> to initialize a new graph with up-to-date data. " +
+    "Two stations will be connected the distance between them is less than " +
+    "<distance> (in meters). Use /nodes to get the number of stations in the " +
+    "current graph. Use /edges to get the number of connections between " +
+    "stations in the current graph. Use /components to get the number of " +
+    "connected components in the current graph. Use /plotgraph to create a " +
+    "map with all the stations and connections between them. Use /route " +
+    "<origin>, <destination> to create a map with the faster route between " +
+    "<origin> and <destination>."
     message(bot, update, text)
 
 
