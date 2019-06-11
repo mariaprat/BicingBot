@@ -5,6 +5,8 @@ import os
 from geopy.geocoders import Nominatim
 import networkx as nx
 from staticmap import StaticMap, Line
+import pandas as pd
+from pandas import DataFrame
 
 # Import functions from external file.
 from data import *
@@ -129,11 +131,17 @@ def graph(bot, update, args, user_data):
         elif (dist <= 0):
             message(bot, update, warning_pos_num)
         else:
-            results = geometric_graph(dist)
+            # Import station data.
+            url_info = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information'
+            url_status = 'https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_status'
+            bicing = DataFrame.from_records(pd.read_json(url_info)['data']['stations'], index='station_id')
+            bikes = DataFrame.from_records(pd.read_json(url_status)['data']['stations'], index='station_id')
+            bicing = bicing[['address', 'lat', 'lon']]
+            bikes = bikes[['num_bikes_available', 'num_docks_available']]
+            
+            results = geometric_graph(dist, bicing)
             user_data['G'] = results['G']
-            user_data['position'] = result['position']
-            user_data['bicing'] = result['bicing']
-            user_data['bikes'] = result['bikes']
+            user_data['position'] = results['position']
             message(bot, update, "Graph constructed successfully!")
 
     except Exception as e:
@@ -225,8 +233,8 @@ def distribute(bot, update, args, user_data):
                 cost, information = distribution(int(args[0]),
                                                  int(args[1]),
                                                  user_data['G'],
-                                                 user_data['bicing'],
-                                                 user_data['bikes'])
+                                                 bicing,
+                                                 bikes)
                 if (cost > 0):
                     text = """Total cost of transferring bicycles:
                      {} km.""".format(cost)
