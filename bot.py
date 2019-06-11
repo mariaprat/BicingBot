@@ -140,7 +140,7 @@ def graph(bot, update, args, user_data):
                                         index='station_id')
             b2 = DataFrame.from_records(pd.read_json(u2)['data']['stations'], 
                                         index='station_id')
-            bicing = b1[['address', 'lat', 'lon']]
+            bicing = b1[['address', 'lat', 'lon', 'capacity']]
             bikes = b2[['num_bikes_available', 'num_docks_available']]
             
             results = geometric_graph(dist, bicing)
