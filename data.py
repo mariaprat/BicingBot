@@ -205,7 +205,7 @@ def addressesTOcoordinates(addresses):
         location2 = geolocator.geocode(address2 + ', Barcelona')
         return (location1.latitude, location1.longitude), (location2.latitude, location2.longitude)
     except:
-        return None
+        return None, None
 
 # Given a weighted graph G and a dictionary from G.nodes to (lat, lon)
 # returns a map with a dijkstra path from node -1 to 0 and its total weight
@@ -242,7 +242,8 @@ def dijkstra_route(G, position):
 # total amount of time to complete this route
 def unchecked_route(addresses, G, position):
     position[-1], position[0] = addressesTOcoordinates(addresses)
-    
+    if (position[-1] == None): return "Invalid addresses", -1 
+
     F = nx.Graph()
     # The weight of F will be the time in minutes that it costs to go through that edge
     
@@ -268,7 +269,8 @@ def unchecked_route(addresses, G, position):
 # total amount of time to complete this route
 def true_route(addresses, G, position, bikes):
     position[-1], position[0] = addressesTOcoordinates(addresses)
-    
+    if (position[-1] == None): return "Invalid addresses", -1 
+
     F = nx.Graph()
     # The weight of F will be the time in minutes that it costs to go through that edge
     
