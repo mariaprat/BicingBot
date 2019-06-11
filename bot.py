@@ -42,16 +42,16 @@ def is_float(x):
 def start(bot, update, user_data):
     # Saves username's first name.
     name = update.message.chat.first_name
-    text = ("Hello, %s! Do you need something? I'm deBOTed to",
-            "help you.""" % (name))
+    text = "Hello, %s! Do you need something? I'm deBOTed to" +
+           "help you." % (name)
     message(bot, update, text)
 
 
 # Gives information about the authors of the bot.
 def authors(bot, update):
-    text = ("My creators are Maria Prat and Max Balsells. Their emails are",
-            "respectively maria.prat@est.fib.upc.edu and",
-            "max.balsells.i@est.fib.upc.edu.")
+    text =  "My creators are Maria Prat and Max Balsells. Their emails are" +
+            "respectively maria.prat@est.fib.upc.edu and" +
+            "max.balsells.i@est.fib.upc.edu."
     message(bot, update, text)
 
 
