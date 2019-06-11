@@ -1,44 +1,50 @@
 # Telegram Bicing Bot 🚲
 
-Bicing is a bicycle sharing system in Barcelona with stations distributed throughout the city that include many docks for bikes. This project consists of a Telegram bot that answers questions related to geometric graphs defined over Bicing stations. Some of the answers are given by plotting graphs over maps to easily visualize the output. 
+Bicing is a bicycle sharing system in Barcelona with stations distributed throughout the city that include many docks for bikes. This project consists of a Telegram Bot that answers questions related to geometric graphs defined over Bicing stations. Some of the answers are given by plotting graphs over maps to easily visualize the output. 
 
-PREGUNTA 1: On posem les funcions que fa? Opcions: m'agrada més la 1a
- **1. Crear una secció que es digui features i posar els tests a la secció de features.**
- 2. Posar la secció de features abans de getting started (i canviar el nom de getting started per setup o alguna cosa així).
- 
- PREGUNTA 2: Creem una secció que es digui desing choices o algo així? Per explicar les decisions de disseny que haguem pres.
+## Project Structure
+
+Our project has two main parts:
+
+* **`bot.py`**: This file contains the Telegram Bot.
+* **`data.py`**: This file contains functions related to geometric graphs and other related topics that are used by the Bot but can be used separately.
  
 ## Getting Started
 
-Canviaré la introducció d'aquesta secció quan tingui la resta fet.
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+The following instructions will help you to install all the prerequisites to run and use both the Telegram Bot and the functions its based on.
 
 ### Prerequisites
 
-Aquí posem que no es necessita res més per executar el Bot que un dispositiu amb Telegram.
-També posem que si es vol fer servir el fitxer data s'ha de seguir el procediment de installing.
+#### To use the Bot
+
+To use the Telegram Bot, you only need to have a device with Telegram installed. You can download it to your Desktop or use it online in [this webpage](https://telegram.org/) or download it in your preferred app store. After downloading Telegram, you will need to create a free account :).
+
+#### To use the code behind the Bot
+
+The Bot uses Python functions related to geometric graphs. If you want to run this code separately, you will need to install Python 3 in your computer. You can find the instructions to do so in the official [webpage](https://www.python.org/downloads/).
 
 ### Installing
 
-Aquí fem dues parts, una que explica com instal·lar Telegram i engegar el Bot (s'explicarà més detalladament com funciona a la part de tests). L'altra explica com instal·lar requirements i tot això per utilitzar el fitxer data.py sol.
+Nothing else is needed to use the Telegram Bot. However, to use the Python functions you will have to install some libraries. Run the following commands in any directory with the `requirements.txt` file:
 
-## Running the tests
+```{bash}
+pip install -r requirements.txt
+```
+You shouldn't have any problemes using `pip` because it comes togheter with latest Python versions. If some error occurs, just upgrade your `pip` version or install `pip` by following this [link](https://pip.pypa.io/en/stable/installing/).
 
-Això seran exemples sobre totes les funcions que faré quan el bot estigui obert i acabat.
-Poso també tests sobre les funcions de data.py.
+## Features
 
-### Break down into end to end tests
+## Execution and testing
 
-### And coding style tests
+### Telegram Bot Tests
 
-## Deployment
+### `data.py` Tests
 
-Això ho entenc menys. **Jo ho trauria perquè no ho hentenc, sembla per gent super pro**
+## Design Choices
 
 ## Built With
 
-Aquí posem que està fet amb Python i les llibreries que utilitzem? **Jo faria això (+ Telegram)**
+Our [Telegram](https://telegram.org/) Bot is build with [Python](https://www.python.org).
 
 ## Authors
 
@@ -47,9 +53,11 @@ Aquí posem que està fet amb Python i les llibreries que utilitzem? **Jo faria 
 
 ## License
 
-No sé si hem de posar alguna cosa. **No idea neither**
+?
 
-## Acknowledgments
+## References
 
-Posem els repositoris del jordi-petit, la informació de Bicing i ja està no? **Sí, també el helper de la llibreria NetworkX i el github de l'usuari que lexplica com fer un readme?**
-O la informació de Bicing l'hauríem de posar a contributing? **No, entenc que constributing és un apartat on expliques com pot contribuir la gent en el teu repositori git**
+* [Project statement.](https://github.com/jordi-petit/ap2-bicingbot-2019)
+* [How to create a Telegram Bot.](https://github.com/jordi-petit/exemples-telegram)
+* [Bicing data.](https://api.bsmsa.eu/ext/api/bsm/gbfs/v2/en/station_information)
+* [NetworkX tutorial.](https://networkx.github.io/documentation/stable/tutorial.html)
