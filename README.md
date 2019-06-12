@@ -122,7 +122,7 @@ minimum transportation cost of bikes and the edge with the highest cost. We
 can move bikes around the geometric graph to get to a solution in which all 
 the stations meet the requirements. The cost of a solution is defined as the sum 
 of the distances of each moving bike, then the edge with the highest cost is 
-the one with maximum distance*number of moving bikes.
+the one with maximum distance\*number of moving bikes.
 
 ### Errors and warnings
 
