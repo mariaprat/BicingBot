@@ -172,8 +172,8 @@ instead of `/route`:
 
 And for completeness let's look at some examples of the `/distribute` command:
 
-<center><img src='/images/distribute1.jpg' width='300'></center>
-<center><img src='/images/distribute2.jpg' width='300'></center>
+<center><img src='/images/distribute_1.jpg' width='300'></center>
+<center><img src='/images/distribute_2.jpg' width='300'></center>
 
 ## Design Choices
 
