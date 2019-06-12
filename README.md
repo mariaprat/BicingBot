@@ -144,14 +144,14 @@ all the tests for the Telegram Bot are implicit tests of the `data.py` functions
 
 When you open for the first time the bot, you'll find something similar to this:
 
-![restart](/images/restart.png)
+![restart](/images/restart.jpg)
 
 After clicking on **Start** or **Restart**, you'll be able to call your first
 commands. Here you can find some screenshots showing how to use basic commands.
 
-![start](/images/start.png)
-![help](/images/help.png)
-![basic](/images/basic.png)
+![start](/images/start.jpg)
+![help](/images/help.jpg)
+![basic](/images/basic.jpg)
 
 #### Plotgraph
 #### Routes
