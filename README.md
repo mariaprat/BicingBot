@@ -133,12 +133,20 @@ both brief and clear.
 ## Execution and testing
 
 To execute the Telegram Bot, search for it username in Telegram's search bar.
-Its username is @bicing2019.
+Its username is @bicing2019. 
 
 ### Telegram Bot Tests
 
-### `data.py` Tests
+In this section you can find examples and tests of the Telegram Bot. Note that
+all the tests for the Telegram Bot are implicit tests of the `data.py` functions. 
 
+#### Simple commands
+
+#### Plotgraph
+#### Routes
+#### Distribute
+#### Route vs. Valid Route
+#### Errors and warnings
 * CHECK REGULAR FUNCTIONS
 * PLOTGRAPHS WITH FEW EDGES (d = 100) AND QUITE SOME (d = 700)
 * RUTES (BONICA, LLARGA, CURTA, en el mateix punt, caminada i inventada)
