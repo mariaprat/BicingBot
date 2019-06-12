@@ -69,7 +69,7 @@ Gives a welcoming message to the user.
 
 Gives information and emails of the authors.
 
-- `/_help`
+- `/help`
 
 Gives brief instructions about the Bot commands.
     
