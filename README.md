@@ -1,4 +1,4 @@
-# Telegram Bicing Bot 🚲
+# Telegram Bicing Bot 🚴
 
 Bicing is a bicycle sharing system in Barcelona with stations distributed
 throughout the city that include many docks for bikes. This project consists
