@@ -157,13 +157,25 @@ Now lets look at some examples of the /graph and /plotgraph commands. Here there
 are two examples, one with a small value for the distance and another one with a
 higher value:
 
-<center><img src='/images/plotgraph_d400.png' width='300'></center>
-<center><img src='/images/plotgraph_d700.png' width='300'></center>
+<center><img src='/images/plotgraph_d400.jpg' width='300'></center>
+<center><img src='/images/plotgraph_d700.jpg' width='300'></center>
 
 With respect to the /route command, we will see two rutes, a regular one and
 another one in which the optimum path is done just by walking:
 
-<center><img src='/images/plotgraph_d400.png' width='300'></center>
+<center><img src='/images/rutabonica.jpg' width='300'></center>
+<center><img src='/images/rutacaminar.jpg' width='300'></center>
+
+Lets look one example in which the path change when using /valid_route
+instead of /route:
+
+<center><img src='/images/validroute_1.jpg' width='300'></center>
+<center><img src='/images/validroute_2.jpg' width='300'></center>
+
+And for completeness lets look at some examples of the /distribute command:
+
+<center><img src='/images/distribute1.jpg' width='300'></center>
+<center><img src='/images/distribute2.jpg' width='300'></center>
 
 #### Plotgraph
 #### Routes
