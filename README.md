@@ -139,7 +139,11 @@ Its username is @bicing2019.
 
 ### `data.py` Tests
 
-I'm not sure if they are necessary.
+* CHECK REGULAR FUNCTIONS
+* PLOTGRAPHS WITH FEW EDGES (d = 100) AND QUITE SOME (d = 700)
+* RUTES (BONICA, LLARGA, CURTA, en el mateix punt, caminada i inventada)
+* DISTRIBUTE (working, not bikes, not docks, not answer, not capcity, nothing to do)
+* VALID_ROUTE (one doesnt change, one does)
 
 ## Design Choices
 
