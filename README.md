@@ -140,8 +140,6 @@ Its username is @bicing2019.
 In this section you can find examples and tests of the Telegram Bot. Note that
 all the tests for the Telegram Bot are implicit tests of the `data.py` functions. 
 
-#### Simple commands
-
 When you open for the first time the bot, you'll find something similar to this:
 
 <center><img src='/images/restart.jpg' width='300'></center>
@@ -153,40 +151,29 @@ commands. Here you can find some screenshots showing how to use basic commands.
 <center><img src='/images/help.jpg' width='300'></center>
 <center><img src='/images/basic.jpg' width='300'></center>
 
-Now lets look at some examples of the /graph and /plotgraph commands. Here there
+Now, let's look at some examples of the `/graph` and `/plotgraph` commands. Here, there
 are two examples, one with a small value for the distance and another one with a
 higher value:
 
 <center><img src='/images/plotgraph_d400.jpg' width='300'></center>
 <center><img src='/images/plotgraph_d700.jpg' width='300'></center>
 
-With respect to the /route command, we will see two rutes, a regular one and
+With respect to the `/route` command, we will see two rutes, a regular one and
 another one in which the optimum path is done just by walking:
 
 <center><img src='/images/rutabonica.jpg' width='300'></center>
 <center><img src='/images/rutacaminar.jpg' width='300'></center>
 
-Lets look one example in which the path change when using /valid_route
-instead of /route:
+Let's look one example in which the path change when using `/valid_route`
+instead of `/route`:
 
 <center><img src='/images/validroute_1.jpg' width='300'></center>
 <center><img src='/images/validroute_2.jpg' width='300'></center>
 
-And for completeness lets look at some examples of the /distribute command:
+And for completeness let's look at some examples of the `/distribute` command:
 
 <center><img src='/images/distribute1.jpg' width='300'></center>
 <center><img src='/images/distribute2.jpg' width='300'></center>
-
-#### Plotgraph
-#### Routes
-#### Distribute
-#### Route vs. Valid Route
-#### Errors and warnings
-* CHECK REGULAR FUNCTIONS
-* PLOTGRAPHS WITH FEW EDGES (d = 100) AND QUITE SOME (d = 700)
-* RUTES (BONICA, LLARGA, CURTA, en el mateix punt, caminada i inventada)
-* DISTRIBUTE (working, not bikes, not docks, not answer, not capcity, nothing to do)
-* VALID_ROUTE (one doesnt change, one does)
 
 ## Design Choices
 
