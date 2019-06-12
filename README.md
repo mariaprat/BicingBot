@@ -54,8 +54,8 @@ version or install `pip` by using this
 
 ## Features
 
-In the [Commands](#Commands) section you'll find the available commands for the
-Bot, that can also handle most [errors and warnings](#errors and warnings).
+In the [Commands](#commands) section you'll find the available commands for the
+Bot, that can also handle most [errors and warnings](#errors-and-warnings).
 
 ### Commands
 
@@ -104,7 +104,7 @@ them. The given route has a walking part towards the first Bicing station (if
 it's the case), a cycling path between connected stations and, finally, it can have
 another walking part towards the destination. The section of the path that is 
 traveled walking appears in green whereas the one traveled on bike appears in
-blue, to make things more visual for the user.It also gives a linear approximation
+blue, to make things more visual for the user. It also gives a linear approximation
 of the time that it takes to travel between the addresses, considering that
 you travel on foot at 4 km/h and at 10 km/h by bike.
 
@@ -145,23 +145,31 @@ I'm not sure if they are necessary.
 
 * We have decided to implement the geometric graph without assuming that the
 earth is flat in a small region, but rather taking into account latitude
-and longitude, and considering always the worst case (since the distance of 
-a degree of longitude depends on which latitude we are), this is more deeply
-explained in the comments of the function code
+and longitude, and considering always the worst case (since the distance equivalent 
+to a degree of longitude depends on which latitude we are at), this is more deeply
+explained in the comments of the function `geometric_graph` code.
 
-* We have decided that in order to get the geometric graph it is strictly
-necessary to first use the command graph, that is, when calling a function
+* We have decided that in order to get the geometric graph, it is strictly
+necessary to first use the command `/graph`, that is, when calling a function
 that needs this graph when was not previously calculated, the bot will send 
 a message to the user and not just initialize the graph with default value.
 We have thought to do it this way because the user may have forgot to declare
 the graph and would therefore obtain information about a graph which hasn't 
-been chosen.
+choosed.
 
-* We have decided to implement another command, valid_route, because we want
+* We have decided to implement another command, `/valid_route`, because we want
 our bot to be useful for the user, and the route command wasn't enough
 because the user could arrive to a station with no bikes or be unlable 
 to return the bike at the end of the path.
 
+* In both `/route` and `/valid_route` commands, we thought that it is useful
+for the user to have an approximated time of travelling, as it was explained
+in the [Commands](#commands) section. Moreover, when showing a route, we emphasise
+the origin and destination points with a bigger marker to make visualization easier.
+
+* Note that each time we call the command `/graph` we update the Bicing information.
+We choosed this option because it keeps up-to-date data and the user doesn't have
+to remember to use other commands (like `/start`) each time it wants to refresh it.
 
 ## Built With
 
