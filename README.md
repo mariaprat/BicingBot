@@ -4,7 +4,7 @@ Bicing is a bicycle sharing system in Barcelona with stations distributed
 throughout the city that include many docks for bikes. This project consists
 of a Telegram Bot that answers questions related to geometric graphs defined
 over Bicing stations. Some of the answers are given by plotting graphs over
-maps to easily visualize the output.
+maps to ease the visualization of the output.
 
 ## Project Structure
 
@@ -49,7 +49,7 @@ pip install -r requirements.txt
 ```
 You shouldn't have any problemes using `pip` because it comes together with
 the latest Python versions. If some error occurs, just upgrade your `pip`
-version or install `pip` by following this
+version or install `pip` by using this
 [link](https://pip.pypa.io/en/stable/installing/).
 
 ## Features
@@ -102,25 +102,27 @@ Shows a map of the current graph with its edges.
 Given two valid addresses in Barcelona, finds the shortest route between
 them. The given route has a walking part towards the first Bicing station (if
 it's the case), a cycling path between connected stations and, finally, it can have
-another walking part towards the destination. It also gives a linear approximation
+another walking part towards the destination. The section of the path that is 
+traveled walking appears in green whereas the one traveled on bike appears in
+blue, to make things more visual for the user.It also gives a linear approximation
 of the time that it takes to travel between the addresses, considering that
 you travel on foot at 4 km/h and at 10 km/h by bike.
 
 - `/valid_route <origin>, <destination>`
 
-It does the same as the previous `/route` command. However, it only considers
-stations with at least one bike and a free dock. **REVISAAAAAAAAAAAAAAAAAAAAAAAR**
+It does the same as the previous `/route` command. However, it is guaranteed that
+the route is available at that moment, that is, that the first station visited has
+at least a bike and the last station has at least a dock.
 
-- `/distribute <min_bikes>, <min_docks>` **REVISAAAAAAAAAAAAAAAAAAAAAAAR COMA**
+- `/distribute <min_bikes>, <min_docks>`
 
 Given a minimum number of bikes for each station `min_bikes` and a minimum
 number of empty docks for each station `min_docks`, this command returns the
 minimum transportation cost of bikes and the edge with the highest cost. We
-can move bikes around the city to get to a solution in which all the stations
-meet the requirements. The cost of a solution is defined as the sum of the
-distances of each moving bike, then the edge with the highest cost is the one
-with maximum weight*number of moving bikes. Another restriction is that nodes
-that meet the constraints must have a zero flow.
+can move bikes around the geometric graph to get to a solution in which all 
+the stations meet the requirements. The cost of a solution is defined as the sum 
+of the distances of each moving bike, then the edge with the highest cost is 
+the one with maximum distance*number of moving bikes.
 
 ### Errors and warnings
 
@@ -141,8 +143,25 @@ I'm not sure if they are necessary.
 
 ## Design Choices
 
-I don't know if there is anything interesting to add here. Maybe the grid
-thing? Also, what Cortadella said.
+* We have decided to implement the geometric graph without assuming that the
+earth is flat in a small region, but rather taking into account latitude
+and longitude, and considering always the worst case (since the distance of 
+a degree of longitude depends on which latitude we are), this is more deeply
+explained in the comments of the function code
+
+* We have decided that in order to get the geometric graph it is strictly
+necessary to first use the command graph, that is, when calling a function
+that needs this graph when was not previously calculated, the bot will send 
+a message to the user and not just initialize the graph with default value.
+We have thought to do it this way because the user may have forgot to declare
+the graph and would therefore obtain information about a graph which hasn't 
+been chosen.
+
+* We have decided to implement another command, valid_route, because we want
+our bot to be useful for the user, and the route command wasn't enough
+because the user could arrive to a station with no bikes or be unlable 
+to return the bike at the end of the path.
+
 
 ## Built With
 
@@ -152,10 +171,6 @@ Our [Telegram](https://telegram.org/) Bot is build with [Python](https://www.pyt
 
 * **Max Balsells** - <max.balsells.i@est.fib.upc.edu>
 * **Maria Prat** - <maria.prat@est.fib.upc.edu>
-
-## License
-
-?
 
 ## References
 
