@@ -21,7 +21,7 @@ def message(bot, update, s):
 # Sends the message 's' to the user in Markdown format.
 def message_MD(bot, update, s):
     bot.send_message(chat_id=update.message.chat_id, text=s,
-        parse_mode=telegram.ParseMode.MARKDOWN)
+                     parse_mode=telegram.ParseMode.MARKDOWN)
 
 
 # Checks if x is an integer number.
@@ -53,38 +53,48 @@ def start(bot, update, user_data):
     message(bot, update, text)
     message_MD(bot, update, text2)
 
+
 # Gives information about the authors of the bot.
 def authors(bot, update):
-    text = ('''My creators are Maria Prat and Max Balsells. 
-Their emails are respectively maria.prat@est.fib.upc.edu and 
+    text = ('''My creators are Maria Prat and Max Balsells.
+Their emails are respectively maria.prat@est.fib.upc.edu and
 max.balsells.i@est.fib.upc.edu.''')
     message_MD(bot, update, text)
+
 
 # Gives information about bot commands and short instructions to use them.
 def help(bot, update):
     text = '''
 🚲 Let me help you to use *Bicing* in Barcelona! 🚲
 - Use /start to get a welcoming message. 😉
-- Use /authors to get information about my authors. 
+- Use /authors to get information about my authors.
 - Use /graph *<distance>* to initialize a new graph with up-to-date data.
-You can choose the maximum distance between two stations or take the default 
+You can choose the maximum distance between two stations or take the default
 value of 1000 m.
 - Use /nodes to get the number of stations in the current graph.
-- Use /edges to get the number of connections between stations in the current graph.
-- Use /components to get the number of connected components in the current graph.
-- Use /plotgraph to create a map 🗺️ with all the stations and connections between them. 
-- Use /route *<origin>, <destination>* to create a map with the fastest route between two addresses.
-- Use /valid\_route *<origin>, <destination>* to create a map with the fastest route between two addresses.
-The first station has at least one bike and the last one has at least one empty dock.
+- Use /edges to get the number of connections between stations in the graph.
+- Use /components to get the number of connected components in the graph.
+- Use /plotgraph to create a map 🗺️ with the stations and connections among
+them.
+- Use /route *<origin>, <destination>* to create a map with the fastest route
+between two addresses.
+- Use /valid\_route *<origin>, <destination>* to create a map with the fastest
+route between two addresses.
+The first station has at least one bike and the last one has at least one empty
+dock.
+- Use /distribute *<min_bikes>, <min_docks>* to find the minimum cost of
+transfering bikes between connected stations so that each one has at least
+`min_bikes` bikes and `min_docks` empty docks, as well as the edge with maximum
+cost.
 '''
-    message_MD(bot, update, text)  
-
+    message_MD(bot, update, text)
 
 
 # Tells the user how many nodes has the current graph (if previously defined).
 def nodes(bot, update, user_data):
     if 'G' in user_data:
-        message(bot, update, user_data['G'].number_of_nodes())
+        message(bot, update, "Number of nodes: " +
+                str(user_data['G'].number_of_nodes()))
     else:
         message(bot, update, "❗You must first construct a geometric graph!")
 
@@ -93,8 +103,8 @@ def nodes(bot, update, user_data):
 # (if previously defined).
 def components(bot, update, user_data):
     if 'G' in user_data:
-        message(bot, update,
-                nx.number_connected_components(user_data['G']))
+        message(bot, update, "Number of connected components: " +
+                str(nx.number_connected_components(user_data['G'])))
     else:
         message(bot, update, "❗You must first construct a geometric graph!")
 
@@ -102,7 +112,8 @@ def components(bot, update, user_data):
 # Tells the user how many edges has the current graph (if previously defined).
 def edges(bot, update, user_data):
     if 'G' in user_data:
-        message(bot, update, user_data['G'].number_of_edges())
+        message(bot, update, "Number of edges: " +
+                str(user_data['G'].number_of_edges()))
     else:
         message(bot, update, "❗You must first construct a geometric graph!")
 
@@ -126,7 +137,7 @@ def plotgraph(bot, update, user_data):
 
 # Defines a new geometric graph over the stations with the desired distance in
 # as meters argument. If it isn't specified, it takes 1000 m as the distance.
-# Because of the implementation, small distances (<= 5) make it eternally slow.
+# And we store the dataframes that contain the bicing stations information.
 def graph(bot, update, args, user_data):
     warning_num = "❗You should introduce a number!"
     warning_pos_num = "❗You should introduce a positive number!"
@@ -144,16 +155,16 @@ def graph(bot, update, args, user_data):
         else:
             # Import station data.
             url_info = ui = ('https://api.bsmsa.eu/ext/api/bsm/gbfs/'
-                        'v2/en/station_information')
+                             'v2/en/station_information')
             url_status = us = ('https://api.bsmsa.eu/ext/api/bsm/gbfs/'
-                          'v2/en/station_status')
-            b1 = DataFrame.from_records(pd.read_json(ui)['data']['stations'], 
+                               'v2/en/station_status')
+            b1 = DataFrame.from_records(pd.read_json(ui)['data']['stations'],
                                         index='station_id')
-            b2 = DataFrame.from_records(pd.read_json(us)['data']['stations'], 
+            b2 = DataFrame.from_records(pd.read_json(us)['data']['stations'],
                                         index='station_id')
             bicing = b1[['address', 'lat', 'lon', 'capacity']]
             bikes = b2[['num_bikes_available', 'num_docks_available']]
-            
+
             results = geometric_graph(float(dist), bicing)
 
             user_data['G'], user_data['position'] = results
@@ -205,7 +216,7 @@ def valid_route(bot, update, args, user_data):
     if 'G' in user_data:
         try:
             m, time = true_route(" ".join(args), user_data['G'],
-                            user_data['position'], user_data['bikes'])
+                                 user_data['position'], user_data['bikes'])
 
             if (time == -1):
                 bot.send_message(chat_id=update.message.chat_id, text=m)
