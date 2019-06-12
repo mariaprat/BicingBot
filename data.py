@@ -209,17 +209,16 @@ def update(G, bikes):
 def distribution(requiredBikes, requiredDocks, G, bicing, bikes):
     nbikes = 'num_bikes_available'
     ndocks = 'num_docks_available'
-    total = str(requiredDocks + requiredBikes)
+    total = str(requiredDocks + requiredBikes) + "."
 
     if (bikes[nbikes].sum() < requiredBikes * len(bikes.index)):
-        return 0, "❗There are not so many bicicles!"
+        return 0, "❗There are not so many bicycles!"
 
     if (bikes[ndocks].sum() < requiredDocks * len(bikes.index)):
         return 0, "❗There are not so many docks!"
 
     if (min(bicing['capacity']) < requiredDocks + requiredBikes):
-        return 0, "❗There are stations whose capacity is less than " + 
-        total + "."
+        return 0, "❗There are stations whose capacity is less than " + total
 
     F = build_flow_graph(requiredBikes, requiredDocks, G, bicing, bikes)
     return update(F, bikes)
@@ -369,3 +368,4 @@ def true_route(addresses, G, position, bikes):
                 F.add_edge(-1, a, weight=0.015*distance(-1, a, position))
 
     return dijkstra_route(F, position)
+
