@@ -149,9 +149,9 @@ When you open for the first time the bot, you'll find something similar to this:
 After clicking on **Start** or **Restart**, you'll be able to call your first
 commands. Here you can find some screenshots showing how to use basic commands.
 
-<center><img src='/images/start.jpg' width='100'></center>
-<center><img src='/images/help.jpg' width='100'></center>
-<center><img src='/images/basic.jpg' width='100'></center>
+<center><img src='/images/start.jpg' height='100'></center>
+<center><img src='/images/help.jpg' height='100'></center>
+<center><img src='/images/basic.jpg' height='100'></center>
 
 #### Plotgraph
 #### Routes
